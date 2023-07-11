@@ -1,3 +1,4 @@
+import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -5,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.yandex.praktikum.LoginResponseBody;
+import ru.yandex.praktikum.User;
+import ru.yandex.praktikum.UserData;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -19,23 +22,26 @@ public class ChangingUserDataTest {
     @Test
     @DisplayName("Changing user data with authorization")
     public void changeUserDataWithAuthorization(){
-        String json = "{ \"email\": \"pavelz_16@gmail.com\",\n" +
-                "\"password\": \"123qaz123\"}";
+        String email = "pavelz_16@gmail.com";
+        String password = "123qaz123";
+        UserData data = new UserData(email, password);
 
         Response response =
                 given()
                         .header("Content-type", "application/json")
                         .and()
-                        .body(json)
+                        .body(data)
                         .when()
                         .post("/api/auth/login");
 
         Gson gson = new Gson();
         LoginResponseBody responseBody = gson.fromJson(response.getBody().print(), LoginResponseBody.class);
 
+        Faker faker = new Faker();
+        String name = faker.name().firstName();
+        User user = new User(name, email, password);
+        String changedJson = gson.toJson(user);
 
-        String changedJson = "{ \"email\": \"pavelz_16@gmail.com\",\n" +
-                "\"password\": \"123qaz123\", \"name\": \"Pavelllll\"}";
         Response userResponse =
                 given()
                         .header("Content-type", "application/json")

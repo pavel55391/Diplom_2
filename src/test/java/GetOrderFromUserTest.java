@@ -4,6 +4,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 import ru.yandex.praktikum.LoginResponseBody;
 import ru.yandex.praktikum.OrderResponse;
+import ru.yandex.praktikum.UserData;
 
 import static io.restassured.RestAssured.given;
 
@@ -17,14 +18,13 @@ public class GetOrderFromUserTest {
     @Test
     @DisplayName("Get user order without authorization")
     public void getUserOrderWithoutAuthorization() {
-        String json = "{ \"email\": \"pavelz_16@gmail.com\",\n" +
-                "\"password\": \"123qaz123\"}";
+        UserData data = new UserData("pavelz_16@gmail.com" , "123qaz123");
 
         Response response =
                 given()
                         .header("Content-type", "application/json")
                         .and()
-                        .body(json)
+                        .body(data)
                         .when()
                         .post("/api/auth/login");
 
